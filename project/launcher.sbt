@@ -1,5 +1,6 @@
 resolvers ++= Seq(
-  Resolver.bintrayRepo("mtrupkin", "sbt-plugins"),
+//  Resolver.bintrayRepo("mtrupkin", "sbt-plugins"),
+  Resolver.url("org.trupkin sbt plugins", url("http://dl.bintray.com/mtrupkin/sbt-plugins"))(Resolver.ivyStylePatterns),
   "Alfresco Repo" at "https://maven.alfresco.com/nexus/content/groups/public/",
   "Simulation @ TU Delft" at "http://simulation.tudelft.nl/maven/"
 )
