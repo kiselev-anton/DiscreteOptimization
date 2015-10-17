@@ -83,7 +83,6 @@ class DepthFirstSearchTest extends FlatSpec with Matchers {
     val graph = Graph.from(edges = edges)
 
     val components = DepthFirstSearch(graph).components
-    components.foreach(println)
     components.length should be (4)
   }
 

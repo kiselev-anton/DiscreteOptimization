@@ -12,8 +12,8 @@ object BoruvkaKruskalAlgorithm {
 
   def MST_edgeSet(graph: Graph[Int, WUnDiEdge]) = {
 
-    type Node = graph.NodeT
-    type Edge = WUnDiEdge[Node]
+    type Node = Int
+    type Edge = WUnDiEdge[Int]
 
     val n = graph.nodes.size
 
@@ -22,12 +22,10 @@ object BoruvkaKruskalAlgorithm {
     }
 
     val queue = PriorityQueue(graph.edges
-      .map(e => (e.head ~% e.tail.head)(e.weight)).toSeq :_*)
+      .map(e => e.toOuter).toSeq :_*)
 
-    val components = HashMap(graph.nodes.zipWithIndex
-      .map{ case (edge, index) => (index, Set(edge)) }.toSeq: _*)
-
-    def size(component: Int) = components(component).size
+    val components = HashMap(graph.nodes.toOuter.zipWithIndex
+      .map{ case (node, index) => (index, Set(node)) }.toSeq: _*)
 
     def merge(component1: Int, component2: Int): Unit = {
       components(component1) ++= components(component2)
@@ -36,24 +34,31 @@ object BoruvkaKruskalAlgorithm {
 
     def component(node: Node) = components.keys.find(components(_).contains(node)).get
 
-    var MST_edges:Set[WUnDiEdge[Int]] = Set.empty
+    var MST_edges:Set[Edge] = Set.empty
     while (MST_edges.size != n-1) {
       val edge@(v :~ w % weight) = queue.dequeue()
 
-      val component1Index = component(v)
-      val component2Index = component(w)
-      val p = components(component1Index); val q = components(component2Index)
+      val component1Index = component(v); val p = components(component1Index)
+      val component2Index = component(w); val q = components(component2Index)
 
       if (component1Index != component2Index) {
         if (p.size > q.size) merge(component1Index, component2Index)
         else                 merge(component2Index, component1Index)
-        MST_edges += (v.toInt ~% w.toInt)(weight)
+        MST_edges += edge
       }
     }
     MST_edges
   }
 
+  def edges2Weight(edges: Iterable[WUnDiEdge[Int]]) = edges.toSeq.map{case (_ :~ _ % weight) => weight}.sum
+
+  def MST_weight(graph: Graph[Int, WUnDiEdge]) = edges2Weight(MST_edgeSet(graph))
 
   def MST(graph: Graph[Int, WUnDiEdge]) = Graph.from(edges = MST_edgeSet(graph))
+
+  def solve(graph: Graph[Int, WUnDiEdge]): (Graph[Int, WUnDiEdge], Long) = {
+    val edgeSet = MST_edgeSet(graph)
+    (Graph.from(edges = edgeSet), edges2Weight(edgeSet))
+  }
 
 }

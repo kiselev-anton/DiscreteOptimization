@@ -24,17 +24,19 @@ class BoruvkaKruskalAlgorithmTest extends FlatSpec with Matchers {
 
     val graph = Graph.from(edges = edges)
 
-    val MST = BoruvkaKruskalAlgorithm.MST(graph)
+    val (mst, mst_weight) = BoruvkaKruskalAlgorithm.solve(graph)
 
-    MST should be (Graph.from(edges = Seq(
+    mst should be (Graph.from(edges = Seq(
       (1 ~% 2)(5),
       (2 ~% 3)(0),
       (3 ~% 4)(25)
     )))
+
+    mst_weight should be (30)
   }
 
   "A test graph" should "have correctly constructed MST" in {
-    val n = 14
+    val n = 15
 
     val input =
       """2 1 3 2 11 3 0
@@ -51,6 +53,7 @@ class BoruvkaKruskalAlgorithmTest extends FlatSpec with Matchers {
         |11 3 10 4 13 6 0
         |12 6 9 7 14 9 0
         |13 9 15 10 9 8 0
+        |7 16 8 15 14 10 0
       """.stripMargin.split("\n")
 
     val edges = for (vertex <- 0 until n;
@@ -58,9 +61,9 @@ class BoruvkaKruskalAlgorithmTest extends FlatSpec with Matchers {
 
     val graph = Graph.from(edges = edges)
 
-    val MST = BoruvkaKruskalAlgorithm.MST(graph)
+    val (mst, mst_weight) = BoruvkaKruskalAlgorithm.solve(graph)
 
-    MST should be (Graph.from(edges = Seq(
+    mst should be (Graph.from(edges = Seq(
       (1 ~% 2)(1),
       (1 ~% 11)(3),
       (2 ~% 3)(1),
@@ -76,6 +79,10 @@ class BoruvkaKruskalAlgorithmTest extends FlatSpec with Matchers {
       (12 ~% 13)(6),
       (14 ~% 15)(10)
     )))
+
+    mst.edges.toOuter should not contain (8 ~% 15)(15)
+
+    mst_weight should be (46)
   }
 
 }

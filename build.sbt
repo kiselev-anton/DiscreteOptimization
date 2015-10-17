@@ -17,7 +17,7 @@ libraryDependencies ++= Seq(
  *   - task4 (not ready)
  *   - task5 (not available yet)
  */
-mainClass in assembly := Some("task1.Main")
+mainClass in assembly := Some("task2.Main")
 mainClass in buildLauncher := Some("task1.Main")
 
-assemblyJarName in assembly := "DiscreteOptimization.jar"
+assemblyJarName in assembly := "DiscreteOptimization2.jar"
