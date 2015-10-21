@@ -3,12 +3,9 @@ package task2
 import org.scalatest._
 import scalax.collection.immutable.Graph
 import scalax.collection.edge.Implicits._
+import shared.EdgeExtractor.extractWUnDiEdges
 
 class BoruvkaKruskalAlgorithmTest extends FlatSpec with Matchers {
-
-  def extractEdgesForSeq(vertex: Int, seq: Seq[Int]) = seq.sliding(2,2).collect{
-    case neighbor +: weight +: _ => (vertex ~% neighbor)(weight)
-  }.toSeq
 
   "A graph from task definition" should "have correctly constructed MST" in {
     val n = 4
@@ -20,7 +17,7 @@ class BoruvkaKruskalAlgorithmTest extends FlatSpec with Matchers {
         |3 25 0 """.stripMargin.split("\n")
 
     val edges = for (vertex <- 0 until n;
-                     edge <- extractEdgesForSeq(vertex+1, input(vertex).split(" ").map(_.toInt))) yield edge
+                     edge <- extractWUnDiEdges(vertex+1, input(vertex).split(" ").map(_.toInt))) yield edge
 
     val graph = Graph.from(edges = edges)
 
@@ -57,7 +54,7 @@ class BoruvkaKruskalAlgorithmTest extends FlatSpec with Matchers {
       """.stripMargin.split("\n")
 
     val edges = for (vertex <- 0 until n;
-                     edge <- extractEdgesForSeq(vertex+1, input(vertex).split(" ").map(_.toInt))) yield edge
+                     edge <- extractWUnDiEdges(vertex+1, input(vertex).split(" ").map(_.toInt))) yield edge
 
     val graph = Graph.from(edges = edges)
 
