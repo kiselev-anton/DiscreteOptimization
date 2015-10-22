@@ -9,29 +9,28 @@ import scalax.collection.GraphPredef.EdgeLikeIn
 /** Путь максимального веса. */
 case class ModifiedDijkstra[Node, Edge[X] <: EdgeLikeIn[X]](graph: Graph[Node, Edge]) {
 
-  def distance(v: Node, w: Node) = (graph.get(v) ~> graph.get(w))
+  def distance(v: Node, w: Node) = (graph.get(v) ~> graph.get(w)) // min is here
     .map(_.weight).toSeq.sorted.headOption.getOrElse(Long.MinValue)
 
-  def maxminPath(v: Node, w: Node)/*: Seq[Node] */ = { // ~>| — выходящие вершины
+  def maxminPath(v: Node, w: Node): (Seq[Node], Long) = {
 
     val distances = new HashMap[Node, Long]()
 
     for(node <- graph.nodes.toOuter)
-      if(node == v) distances(node) = 0
-      else          distances(node) = Long.MinValue
+      distances(node) = if(node == v) Long.MaxValue else Long.MinValue
 
     val previous = new HashMap[Node, Node]()
 
     implicit def orderingOnNodes = new Ordering[Node] {
-      override def compare(x: Node, y: Node): Int = distances(x) compare distances(y)
+      def compare(x: Node, y: Node): Int = distances(x) compare distances(y)
     }
 
-    val queue = PriorityQueue[Node]()
-    queue ++= graph.nodes.toOuter
+    val queue = PriorityQueue[Node](graph.nodes.toOuter.toSeq: _*)(orderingOnNodes)
 
-    while(queue.nonEmpty) {
+    while (queue.nonEmpty) {
       val vertex = queue.dequeue()
       for (neighbor <- graph.get(vertex).diSuccessors.toOuterNodes) {
+        println(vertex, neighbor)
         val alternative_distance = distances(neighbor) max distance(vertex, neighbor)
         if (distances(neighbor) < alternative_distance) {
           distances(neighbor) = alternative_distance
@@ -39,6 +38,9 @@ case class ModifiedDijkstra[Node, Edge[X] <: EdgeLikeIn[X]](graph: Graph[Node, E
         }
       }
     }
+
+    println(distances)
+    println(previous)
 
     @tailrec
     def backTraverse(vertex: Node, seq: Seq[Node] = Nil): Seq[Node] = previous.get(vertex) match {

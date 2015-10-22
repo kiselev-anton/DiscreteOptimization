@@ -18,5 +18,5 @@ object Main extends shared.TaskSolverApp(in => {
   components.length + "\n" +
   components.map(
     _.map(_.toString().toInt).sorted).sortBy(_.head)
-    .map(_.mkString(" ") + " 0").mkString("\n")
+    .map(_.mkString(" ") + " 0").mkString("\n") + " 0"
 })

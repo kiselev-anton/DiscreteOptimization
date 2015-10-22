@@ -13,11 +13,12 @@ libraryDependencies ++= Seq(
  *  Here we should choose the task to execute in JAR:
  *   - task1
  *   - task2
- *   - task3 (not ready)
+ *   - task3
  *   - task4 (not ready)
  *   - task5 (not available yet)
  */
-mainClass in assembly := Some("task2.Main")
+mainClass in assembly := Some("task3.Main")
+
 mainClass in buildLauncher := Some("task1.Main")
 
-assemblyJarName in assembly := "DiscreteOptimization2.jar"
+assemblyJarName in assembly := "DiscreteOptimization3.jar"

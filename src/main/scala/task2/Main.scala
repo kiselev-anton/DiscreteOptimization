@@ -17,8 +17,7 @@ object Main extends shared.TaskSolverApp(in => {
   val graph: Graph[Int, WUnDiEdge] = Graph.from(edges = edges)
   val (mst, mst_weight) = BoruvkaKruskalAlgorithm.solve(graph)
 
-  mst.nodes.size + "\n" +
-    mst.nodes.toSeq.sortBy(_.toString().toInt).zipWithIndex
+  mst.nodes.toSeq.sortBy(_.toString().toInt).zipWithIndex
     .map{case (node, i) =>
       node.outgoing.toSeq.map(_.toOuter).map{
         case (v :~ w % _) => s"${if(v == i+1) w else v}"
