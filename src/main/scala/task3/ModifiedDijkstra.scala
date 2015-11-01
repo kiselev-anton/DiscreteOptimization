@@ -17,30 +17,31 @@ case class ModifiedDijkstra[Node, Edge[X] <: EdgeLikeIn[X]](graph: Graph[Node, E
     val distances = new HashMap[Node, Long]()
 
     for(node <- graph.nodes.toOuter)
-      distances(node) = if(node == v) Long.MaxValue else Long.MinValue
+      distances(node) = if(node == v) Long.MaxValue else distance(v, node)
 
     val previous = new HashMap[Node, Node]()
 
     implicit def orderingOnNodes = new Ordering[Node] {
-      def compare(x: Node, y: Node): Int = distances(x) compare distances(y)
+      def compare(x: Node, y: Node): Int = distances(y) compare distances(x)
     }
 
-    val queue = PriorityQueue[Node](graph.nodes.toOuter.toSeq: _*)(orderingOnNodes)
+    val queue = PriorityQueue[Node](v)(orderingOnNodes)
 
     while (queue.nonEmpty) {
       val vertex = queue.dequeue()
       for (neighbor <- graph.get(vertex).diSuccessors.toOuterNodes) {
-        println(vertex, neighbor)
-        val alternative_distance = distances(neighbor) max distance(vertex, neighbor)
-        if (distances(neighbor) < alternative_distance) {
+        val alternative_distance = distances(vertex) min distance(vertex, neighbor)
+//        println(vertex, neighbor, alternative_distance)
+        if (distances(neighbor) <= alternative_distance) {
           distances(neighbor) = alternative_distance
           previous(neighbor) = vertex
         }
+        if (!queue.exists(_ == neighbor)) queue += neighbor
       }
     }
 
-    println(distances)
-    println(previous)
+//    println(distances)
+//    println(previous)
 
     @tailrec
     def backTraverse(vertex: Node, seq: Seq[Node] = Nil): Seq[Node] = previous.get(vertex) match {

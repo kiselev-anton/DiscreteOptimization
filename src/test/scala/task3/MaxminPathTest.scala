@@ -85,8 +85,9 @@ class MaxminPathTest extends FlatSpec with Matchers {
 
     val (maxminpath, pathWeight) = Solver.solve(input.toIterator)
 
-    maxminpath should be (Seq(1,4,7,10,13,15,16))
     pathWeight should be (5)
+    maxminpath should (be (Seq(1,4,7,10,13,15,16)) or
+                       be (Seq(1,4,7,10,12,14,15,16)))
   }
   // TODO fix implementation
   "A graph with sixteen nodes" should "have correctly constructed maxmin path from 3 to 13" in {
@@ -113,8 +114,8 @@ class MaxminPathTest extends FlatSpec with Matchers {
 
     val (maxminpath, pathWeight) = Solver.solve(input.toIterator)
 
-    maxminpath should be (Seq(3,8,13))
     pathWeight should be (9)
+    maxminpath should be (Seq(3,8,13))
   }
 
 }
