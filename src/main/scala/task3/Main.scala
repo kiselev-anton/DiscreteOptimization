@@ -10,7 +10,7 @@ object Solver {
     val n = in.next().toInt
 
     val edges: Seq[WDiEdge[Int]] = 1 to n flatMap { vertex =>
-      val neighbors = in.next().split(" ").collect{case str if str != "" => str.toInt}
+      val neighbors = in.next().split("\\ +").collect{case str if str != "" => str.toInt}
       extractWDiEdges(vertex, neighbors)
     }
 

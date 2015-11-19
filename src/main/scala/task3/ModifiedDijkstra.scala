@@ -3,45 +3,41 @@ package task3
 import scala.annotation.tailrec
 import scalax.collection.immutable.Graph
 
-import scala.collection.mutable.{PriorityQueue, HashMap}
+import scala.collection.mutable.{PriorityQueue, HashMap, HashSet}
 import scalax.collection.GraphPredef.EdgeLikeIn
 
 /** Путь максимального веса. */
 case class ModifiedDijkstra[Node, Edge[X] <: EdgeLikeIn[X]](graph: Graph[Node, Edge]) {
 
-  def distance(v: Node, w: Node) = (graph.get(v) ~> graph.get(w)) // min is here
+  def distance(v: Node, w: Node) = (graph.get(v) ~> graph.get(w))
     .map(_.weight).toSeq.sorted.headOption.getOrElse(Long.MinValue)
 
   def maxminPath(v: Node, w: Node): (Seq[Node], Long) = {
 
+    val previous = new HashMap[Node, Node]()
     val distances = new HashMap[Node, Long]()
+    val seenNodes = new HashSet[Node]()
 
     for(node <- graph.nodes.toOuter)
-      distances(node) = if(node == v) Long.MaxValue else distance(v, node)
+      distances(node) = if (node == v) Long.MaxValue else distance(v, node)
 
-    val previous = new HashMap[Node, Node]()
-
-    implicit def orderingOnNodes = new Ordering[Node] {
-      def compare(x: Node, y: Node): Int = distances(y) compare distances(x)
-    }
-
-    val queue = PriorityQueue[Node](v)(orderingOnNodes)
+    val queue = PriorityQueue[Node](v)(new Ordering[Node] {
+      def compare(x: Node, y: Node): Int = distances(x) compare distances(y)
+    })
 
     while (queue.nonEmpty) {
       val vertex = queue.dequeue()
+      seenNodes += vertex
       for (neighbor <- graph.get(vertex).diSuccessors.toOuterNodes) {
         val alternative_distance = distances(vertex) min distance(vertex, neighbor)
-//        println(vertex, neighbor, alternative_distance)
         if (distances(neighbor) <= alternative_distance) {
           distances(neighbor) = alternative_distance
           previous(neighbor) = vertex
         }
-        if (!queue.exists(_ == neighbor)) queue += neighbor
+        if (!queue.exists(_ == neighbor) && !seenNodes(neighbor))
+          queue += neighbor
       }
     }
-
-//    println(distances)
-//    println(previous)
 
     @tailrec
     def backTraverse(vertex: Node, seq: Seq[Node] = Nil): Seq[Node] = previous.get(vertex) match {
